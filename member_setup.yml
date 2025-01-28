@@ -45,10 +45,22 @@
     - name: Join computer to domain
       win_domain_membership:
         dns_domain_name: "{{ domain_name }}"
-        domain_admin_user: "{{ domain_netbios_name }}\\Administrator"
+        domain_admin_user: "{{ domain_netbios_name }}\\{{ domain_admin_user }}"
         domain_admin_password: "{{ domain_admin_password }}"
         state: domain
       register: domain_join
+
+    - name: Configure Auto Login for {{ domain_admin_user }}
+      win_regedit:
+        path: HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon
+        name: "{{ item.key }}"
+        data: "{{ item.value }}"
+        type: string
+      with_items:
+        - { key: 'AutoAdminLogon', value: '1' }
+        - { key: 'DefaultDomainName', value: '{{ domain_netbios_name }}' }
+        - { key: 'DefaultUserName', value: '{{ domain_admin_user }}' }
+        - { key: 'DefaultPassword', value: '{{ domain_admin_password }}' }
 
     # Reboot is required to complete domain join
     # After reboot, computer will use domain authentication
