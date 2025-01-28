@@ -1,0 +1,49 @@
+################################################################################
+# Ansible Inventory File for Windows Domain Environment
+################################################################################
+#
+# Purpose:
+# This inventory file defines the Windows hosts that Ansible will manage and their
+# roles in the domain environment.
+#
+# Structure:
+# - Groups are defined in square brackets [group_name]
+# - Hosts are listed under their respective groups
+# - Child groups are defined using [group:children]
+# - Group variables are defined using [group:vars]
+#
+# Important Notes:
+# 1. Replace the example hostnames with your actual server hostnames or IP addresses
+# 2. Ensure DNS resolution is working for the hostnames used
+# 3. All Windows hosts must be configured for WinRM access
+#
+################################################################################
+
+# Domain Controllers Group
+# These hosts will be configured as Active Directory Domain Controllers
+[domain_controllers]
+dc01.example.local
+
+
+# Domain Member Computers Group
+# These hosts will be joined to the domain and have Chrome installed
+[domain_members]
+client01.example.local
+
+
+# Parent Group for All Windows Hosts
+# This allows us to apply common Windows configurations to all hosts
+[windows:children]
+domain_controllers
+domain_members
+
+
+# Windows Host Connection Variables
+# These settings configure how Ansible connects to Windows hosts
+[windows:vars]
+# Use WinRM for Windows Remote Management
+# NTLM provides a secure authentication method
+# Server certificate validation is ignored for lab environments
+ansible_connection=winrm
+ansible_winrm_server_cert_validation=ignore
+ansible_winrm_transport=ntlm

@@ -1,0 +1,64 @@
+---
+################################################################################
+# Group Variables for Windows Domain Environment
+################################################################################
+#
+# Purpose:
+# This file contains shared variables used across all playbooks in the project.
+# Group variables provide a central location for configuration and make playbooks
+# more maintainable and reusable.
+#
+# Security Notice:
+# 1. In production environments, NEVER store passwords in plain text
+# 2. Use Ansible Vault to encrypt sensitive information:
+#    ansible-vault encrypt group_vars/all.yml
+# 3. Consider using a secrets management system for production deployments
+#
+# Variable Precedence:
+# Ansible has a specific order for variable precedence. Group variables in 
+# all.yml apply to all groups but can be overridden by more specific group vars.
+################################################################################
+
+# Domain Configuration
+# These settings define the Active Directory domain structure
+domain_name: example.local
+domain_netbios_name: EXAMPLE
+
+
+# Domain Administrator Credentials
+# WARNING: Change these credentials in production environments
+# These credentials will be used for:
+# 1. Initial domain controller setup
+# 2. Domain join operations
+# 3. User creation and management
+domain_admin_password: P@ssw0rd123!
+domain_admin_user: Administrator
+
+
+# Domain Users Configuration
+# This section defines the users that will be created in Active Directory
+# For each user, you can specify:
+# - name: Full name of the user
+# - username: SAM account name
+# - password: Initial password (should be changed at first login)
+# - groups: List of groups the user should belong to
+domain_users:
+  - name: John Smith
+    username: jsmith
+    password: User123!
+    groups: ["Domain Users"]
+  - name: Jane Doe
+    username: jdoe
+    password: User123!
+    groups: ["Domain Users"]
+  - name: IT Admin
+    username: itadmin
+    password: Admin123!
+    groups: ["Domain Users", "Domain Admins"]
+
+
+# Chrome Installation Settings
+# These variables are used by the domain member playbook to install Google Chrome
+# The installer is downloaded from Google's servers and installed silently
+chrome_url: "https://dl.google.com/chrome/install/latest/chrome_installer.exe"
+chrome_path: "C:\\Windows\\Temp\\chrome_installer.exe"

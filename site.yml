@@ -1,0 +1,25 @@
+---
+################################################################################
+# Main Ansible Playbook for Windows Domain Environment Setup
+################################################################################
+#
+# Purpose:
+# This playbook serves as the entry point for setting up a complete Windows domain
+# environment. It uses the concept of playbook imports to organize tasks logically.
+#
+# Prerequisites:
+# 1. Ansible control node with ansible.windows collection installed
+# 2. Windows targets configured for WinRM (Windows Remote Management)
+# 3. Valid Windows credentials with administrative privileges
+#
+# Usage:
+# ansible-playbook -i inventory/hosts site.yml
+#
+# Note: The order of imports is important:
+# - Domain Controller must be set up before domain members can join
+# - Always run the complete playbook to ensure proper sequencing
+#
+################################################################################
+
+- import_playbook: dc_setup.yml
+- import_playbook: member_setup.yml

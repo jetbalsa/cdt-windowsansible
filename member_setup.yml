@@ -1,0 +1,72 @@
+---
+################################################################################
+# Domain Member Configuration and Software Installation Playbook
+################################################################################
+#
+# Purpose:
+# This playbook performs two main functions:
+# 1. Joins Windows computers to the Active Directory domain
+# 2. Installs Google Chrome browser on domain members
+#
+# Prerequisites:
+# 1. Domain Controller must be operational
+# 2. Network DNS must be configured to resolve domain name
+# 3. Target computers must have network connectivity to DC
+# 4. Internet access for Chrome download
+#
+# Notes:
+# - Computer will reboot after joining domain
+# - Local admin rights are required for domain join
+# - Chrome installation is silent (no user interaction needed)
+################################################################################
+
+- name: Configure Domain Member and Install Chrome
+  hosts: domain_members
+  gather_facts: true
+  tasks:
+    # Step 1: Join the computer to the domain
+    # This task:
+    # - Configures computer name
+    # - Joins the specified domain
+    # - Uses domain admin credentials from group_vars/all.yml
+    - name: Join computer to domain
+      win_domain_membership:
+        dns_domain_name: "{{ domain_name }}"
+        domain_admin_user: "{{ domain_admin_user }}"
+        domain_admin_password: "{{ domain_admin_password }}"
+        state: domain
+      register: domain_join
+
+    # Reboot is required to complete domain join
+    # After reboot, computer will use domain authentication
+    - name: Reboot after domain join
+      win_reboot:
+      when: domain_join.reboot_required
+
+    # Step 2: Download Chrome installer
+    # Downloads the latest Chrome enterprise installer
+    # Uses HTTPS for secure download
+    - name: Download Chrome installer
+      win_get_url:
+        url: "{{ chrome_url }}"
+        dest: "{{ chrome_path }}"
+
+    # Step 3: Install Chrome
+    # Performs silent installation with no user interaction
+    # /silent = Silent installation
+    # /install = Install mode
+    - name: Install Chrome silently
+      win_package:
+        path: "{{ chrome_path }}"
+        state: present
+        arguments: /silent /install
+      register: chrome_install
+
+    # Step 4: Cleanup
+    # Removes the installer file to free up disk space
+    # Only runs if installation was successful
+    - name: Remove Chrome installer
+      win_file:
+        path: "{{ chrome_path }}"
+        state: absent
+      when: chrome_install is success
