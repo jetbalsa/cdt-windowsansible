@@ -90,13 +90,10 @@ cat > deploy_setup.yml << EOF
         name: 
           - ansible
           - python3-pip
+          - python3-requests
+          - nano
         state: present
         update_cache: yes
-
-    - name: Install pywinrm
-      pip:
-        name: pywinrm
-        state: present
 EOF
 incus console --type=vga ${DC_NAME} &
 incus console --type=vga ${MEMBER_NAME} &
@@ -161,3 +158,4 @@ incus delete ${DEPLOY_NAME}
 echo "Setup complete! Default credentials: ansible/ansible"
 echo "DC VM: ${DC_NAME} (192.168.56.21)"
 echo "Member VM: ${MEMBER_NAME} (192.168.56.22)"
+echo "Deployment container: ${DEPLOY_NAME}"
