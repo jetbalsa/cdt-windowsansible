@@ -24,6 +24,21 @@
   hosts: domain_members
   gather_facts: true
   tasks:
+    # Configure DNS settings to point to DC
+    - name: Get primary network adapter
+      win_shell: Get-NetAdapter | Where-Object {$_.Status -eq "Up"} | Select-Object -First 1 -ExpandProperty Name
+      register: primary_adapter
+
+    - name: Configure DNS settings
+      win_dns_client:
+        adapter_names: "{{ primary_adapter.stdout_lines[0] }}"
+        ipv4_addresses: 
+          - "{{ hostvars[groups['domain_controllers'][0]]['ansible_host'] }}"
+
+    # Add delay to allow DNS changes to take effect
+    - name: Wait for DNS changes
+      win_shell: Start-Sleep -Seconds 10
+
     # Step 1: Join the computer to the domain
     # This task:
     # - Configures computer name
