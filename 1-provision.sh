@@ -152,8 +152,6 @@ fi
 
 # Cleanup
 rm -f inventory.tmp deploy_setup.yml deploy_inventory.ini
-incus stop --force ${DEPLOY_NAME}
-incus delete ${DEPLOY_NAME}
 
 echo "Setup complete! Default credentials: ansible/ansible"
 echo "DC VM: ${DC_NAME} (192.168.56.21)"
