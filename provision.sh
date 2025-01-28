@@ -102,7 +102,7 @@ EOF
 echo "Creating temporary inventory for deployment..."
 cat > deploy_inventory.ini << EOF
 [deployment]
-${DEPLOY_NAME} ansible_connection=incus ansible_incus_remote=gcicompute02 ansible_incus_project=${PROJECT}
+${DEPLOY_NAME} ansible_connection=community.general.incus ansible_incus_remote=gcicompute02 ansible_incus_project=${PROJECT}
 EOF
 
 echo "Configuring deployment container..."
