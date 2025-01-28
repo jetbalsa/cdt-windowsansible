@@ -25,7 +25,16 @@
   hosts: domain_controllers
   gather_facts: true
   tasks:
-    # Step 1: Install Active Directory Domain Services
+    # Step 1: Set local Administrator password
+    # This is required before domain promotion
+    - name: Set local Administrator password
+      win_user:
+        name: Administrator
+        password: "{{ domain_admin_password }}"
+        state: present
+        password_never_expires: yes
+
+    # Step 2: Install Active Directory Domain Services
     # This task uses the win_feature module to install the AD DS role
     # include_management_tools ensures we get the AD administrative tools
     - name: Install AD-Domain-Services feature
