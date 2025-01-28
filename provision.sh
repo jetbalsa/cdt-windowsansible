@@ -2,7 +2,16 @@
 
 # Exit on error, undefined variables, and pipe failures
 set -euo pipefail
+DEPLOY_NAME="${USER}_deploy"
+# Get current user for prefixing
+USER=${USER:-$(whoami)}
 
+# Set Ansible environment variables for incus connection
+export ANSIBLE_INCUS_REMOTE=gcicompute02
+export ANSIBLE_INCUS_PROJECT="$PROJECT"
+NETWORK_NAME="${USER}_windows_net"
+DC_NAME="${USER}_dc01"
+MEMBER_NAME="${USER}_member01"
 # Cleanup function
 cleanup() {
     echo "Cleaning up resources..."
