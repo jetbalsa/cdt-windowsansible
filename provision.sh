@@ -62,7 +62,7 @@ DEPLOY_NAME="${USER}_deploy"
 incus stop --force ${DEPLOY_NAME} 2>/dev/null || true
 incus delete ${DEPLOY_NAME} 2>/dev/null || true
 
-incus launch ubuntu:24.04 ${DEPLOY_NAME} \
+incus launch images:ubuntu/noble ${DEPLOY_NAME} \
     --network "${NETWORK_NAME}" \
     --device "eth0,ipv4.address=192.168.56.10" -t c4-m8
 
