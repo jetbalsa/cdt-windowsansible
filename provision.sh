@@ -2,7 +2,7 @@
 set -x
 # Exit on error, undefined variables, and pipe failures
 set -euo pipefail
-DEPLOY_NAME="${USER}_deploy"
+DEPLOY_NAME="${USER}-deploy"
 # Get current user for prefixing
 USER=${USER:-$(whoami)}
 PROJECTDIR=$(find ~/ -maxdepth 1 | grep cdt | head -n1)
@@ -15,9 +15,9 @@ PROJECT=$(basename "$PROJECTDIR")
 # Set Ansible environment variables for incus connection
 export ANSIBLE_INCUS_REMOTE=gcicompute02
 export ANSIBLE_INCUS_PROJECT="$PROJECT"
-NETWORK_NAME="${USER}_windows_net"
-DC_NAME="${USER}_dc01"
-MEMBER_NAME="${USER}_member01"
+NETWORK_NAME="${USER}-windows-net"
+DC_NAME="${USER}-dc01"
+MEMBER_NAME="${USER}-member01"
 
 # Set incus remote and project
 incus remote switch gcicompute02
