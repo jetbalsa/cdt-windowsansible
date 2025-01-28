@@ -214,8 +214,8 @@ print_command "rm -f inventory.tmp deploy_setup.yml deploy_inventory.ini"
 print_command "incus file push -r ../cdt-windowsansible ${DEPLOY_NAME}/root/"
 
 # Open VGA consoles for both Windows VMs in background
-print_command "incus console --type=vga ${DC_NAME} &"
-print_command "incus console --type=vga ${MEMBER_NAME} &"
+print_command "incus console --type=vga ${DC_NAME} 2> /dev/null &"
+print_command "incus console --type=vga ${MEMBER_NAME} 2> /dev/null &"
 
 # Display final setup information
 print_message "Setup complete! Default credentials: ansible/ansible"

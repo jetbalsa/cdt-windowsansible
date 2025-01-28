@@ -44,6 +44,8 @@ domain_members
 # Use WinRM for Windows Remote Management
 # NTLM provides a secure authentication method
 # Server certificate validation is ignored for lab environments
+ansible_user=ansible
+ansible_password=ansible
 ansible_connection=winrm
 ansible_winrm_server_cert_validation=ignore
 ansible_winrm_transport=ntlm
