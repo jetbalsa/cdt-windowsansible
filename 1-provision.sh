@@ -211,7 +211,7 @@ fi
 print_command "rm -f inventory.tmp deploy_setup.yml deploy_inventory.ini"
 
 # Copy CDT Ansible playbook to deployment container
-print_command "incus file push -r ../cdt-ansible ${DEPLOY_NAME}/root/"
+print_command "incus file push -r ../cdt-windowsansible ${DEPLOY_NAME}/root/"
 
 # Open VGA consoles for both Windows VMs in background
 print_command "incus console --type=vga ${DC_NAME} &"
