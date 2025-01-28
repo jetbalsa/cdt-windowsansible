@@ -196,7 +196,13 @@ cat > windows_check.yml << 'EOF'
       until: ping_result is success
       retries: 90
       delay: 20
-      failed_when: false
+      ignore_unreachable: yes
+      ignore_errors: yes
+
+    - name: Check final connection status
+      win_ping:
+      register: final_check
+
 EOF
 
 # Wait for Windows VMs to become available
@@ -206,8 +212,8 @@ print_message "Waiting for Windows VMs to be ready..."
 print_command "incus file push inventory.tmp ${DEPLOY_NAME}/root/inventory"
 print_command "incus file push windows_check.yml ${DEPLOY_NAME}/root/windows_check.yml"
 
-# Run the availability check
-if print_command "incus exec ${DEPLOY_NAME} -- ansible-playbook -v -i /root/inventory /root/windows_check.yml"; then
+# Run the availability check with increased verbosity
+if print_command "incus exec ${DEPLOY_NAME} -- ansible-playbook -vv -i /root/inventory /root/windows_check.yml"; then
     print_message "All Windows VMs are ready!"
 else
     print_message "Timeout waiting for Windows VMs to be ready"
