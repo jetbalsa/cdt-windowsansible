@@ -193,7 +193,7 @@ while [ $attempt -le $max_attempts ]; do
     
     # Copy inventory to deployment container and run health check
     print_command "incus file push inventory.tmp ${DEPLOY_NAME}/root/inventory"
-    if print_command "incus exec ${DEPLOY_NAME} -- ansible -v windows -i /root/inventory -m win_ping 2>/dev/null"; then
+    if print_command "incus exec ${DEPLOY_NAME} -- ansible windows -i /root/inventory -m win_ping 2>/dev/null"; then
         print_message "All Windows VMs are ready!"
         break
     fi
