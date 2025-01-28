@@ -35,8 +35,7 @@ incus network create ${NETWORK_NAME} \
     ipv4.address=192.168.56.1/24 \
     ipv4.nat=true \
     ipv6.address=none \
-    ipv6.nat=false \
-    ipv4.firewall=false
+    ipv6.nat=false
 
 echo "Creating DC VM..."
 incus init oszoo:winsrv/2019/ansible-cloud \
