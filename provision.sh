@@ -58,7 +58,6 @@ incus launch oszoo:winsrv/2019/ansible-cloud \
     --device "root,size=320GiB"
 
 echo "Creating deployment container..."
-DEPLOY_NAME="${USER}_deploy"
 incus stop --force ${DEPLOY_NAME} 2>/dev/null || true
 incus delete ${DEPLOY_NAME} 2>/dev/null || true
 
