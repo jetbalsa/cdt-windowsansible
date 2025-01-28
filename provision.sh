@@ -108,7 +108,7 @@ EOF
 
 echo "Configuring deployment container..."
 export DEBIAN_FRONTEND=noninteractive
-if ! ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i deploy_inventory.ini deploy_setup.yml; then
+if ! ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -v -i deploy_inventory.ini deploy_setup.yml; then
     echo "Failed to configure deployment container"
     rm -f deploy_setup.yml deploy_inventory.ini
     incus stop --force ${DEPLOY_NAME}
@@ -139,7 +139,7 @@ while [ $attempt -le $max_attempts ]; do
     
     # Copy inventory to deployment container and run health check
     incus file push inventory.tmp ${DEPLOY_NAME}/root/inventory
-    if incus exec ${DEPLOY_NAME} -- ansible windows -i /root/inventory -m win_ping 2>/dev/null; then
+    if incus exec ${DEPLOY_NAME} -- ansible -v windows -i /root/inventory -m win_ping 2>/dev/null; then
         echo "All Windows VMs are ready!"
         break
     fi
