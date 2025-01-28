@@ -107,7 +107,7 @@ print_command "sleep 10"
 
 # Create an Ansible playbook to configure the deployment container
 print_message "Creating temporary Ansible playbook for deployment setup..."
-print_command "cat > deploy_setup.yml << EOF
+print_command "cat > deploy_setup.yml << 'EOF'
 ---
 - hosts: deployment
   connection: incus
@@ -141,7 +141,8 @@ print_command "cat > deploy_setup.yml << EOF
           - nano
         state: present
         update_cache: yes
-EOF"
+EOF
+"
 
 # Open VGA consoles for both Windows VMs in background
 print_command "incus console --type=vga ${DC_NAME} &"
@@ -149,10 +150,11 @@ print_command "incus console --type=vga ${MEMBER_NAME} &"
 
 # Create Ansible inventory file for configuring deployment container
 print_message "Creating temporary inventory for deployment..."
-print_command "cat > deploy_inventory.ini << EOF
+print_command "cat > deploy_inventory.ini << 'EOF'
 [deployment]
 ${DEPLOY_NAME} ansible_connection=community.general.incus ansible_incus_remote=gcicompute02 ansible_incus_project=${PROJECT}
-EOF"
+EOF
+"
 
 # Configure the deployment container using Ansible
 print_message "Configuring deployment container..."
@@ -167,7 +169,7 @@ fi
 
 # Create Ansible inventory for Windows VMs
 print_message "Creating temporary inventory..."
-print_command "cat > inventory.tmp << EOF
+print_command "cat > inventory.tmp << 'EOF'
 [windows]
 dc ansible_host=192.168.56.21
 member ansible_host=192.168.56.22
@@ -178,7 +180,8 @@ ansible_password=ansible
 ansible_connection=winrm
 ansible_winrm_server_cert_validation=ignore
 ansible_winrm_transport=ntlm
-EOF"
+EOF
+"
 
 # Wait for Windows VMs to become available
 print_message "Waiting for Windows VMs to be ready..."
