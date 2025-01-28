@@ -98,9 +98,6 @@ cat > deploy_setup.yml << EOF
         name: pywinrm
         state: present
 EOF
-echo "Starting Windows VMs..."
-incus start ${DC_NAME}
-incus start ${MEMBER_NAME}
 incus console --type=vga ${DC_NAME} &
 incus console --type=vga ${MEMBER_NAME} &
 echo "Creating temporary inventory for deployment..."
