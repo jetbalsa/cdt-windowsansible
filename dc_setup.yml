@@ -55,14 +55,6 @@
       win_reboot:
       when: win_feature.reboot_required or dns_feature.reboot_required
 
-    # Configure DNS Server
-    - name: Set DNS Server to listen on all interfaces
-      win_dns_server:
-        type: primary
-        name: "{{ domain_name }}"
-        ipv4_address: "*"
-        state: present
-
     # Step 2: Create new Active Directory domain
     # This is the actual domain promotion (dcpromo) process
     # The safe_mode_password is required for AD restore mode
