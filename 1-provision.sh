@@ -107,7 +107,7 @@ print_command "sleep 10"
 
 # Create an Ansible playbook to configure the deployment container
 print_message "Creating temporary Ansible playbook for deployment setup..."
-print_command "cat > deploy_setup.yml << 'EOF'
+cat > deploy_setup.yml << 'EOF'
 ---
 - hosts: deployment
   connection: incus
@@ -142,7 +142,7 @@ print_command "cat > deploy_setup.yml << 'EOF'
         state: present
         update_cache: yes
 EOF
-"
+
 
 # Open VGA consoles for both Windows VMs in background
 print_command "incus console --type=vga ${DC_NAME} &"
