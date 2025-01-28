@@ -98,7 +98,11 @@ cat > deploy_setup.yml << EOF
         name: pywinrm
         state: present
 EOF
-
+echo "Starting Windows VMs..."
+incus start ${DC_NAME}
+incus start ${MEMBER_NAME}
+incus console --type=vga ${DC_NAME} &
+incus console --type=vga ${MEMBER_NAME} &
 echo "Creating temporary inventory for deployment..."
 cat > deploy_inventory.ini << EOF
 [deployment]
@@ -114,10 +118,6 @@ if ! ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i deploy_inventory.ini de
     incus delete ${DEPLOY_NAME}
     exit 1
 fi
-
-echo "Starting Windows VMs..."
-incus start ${DC_NAME}
-incus start ${MEMBER_NAME}
 
 echo "Creating temporary inventory..."
 cat > inventory.tmp << EOF
