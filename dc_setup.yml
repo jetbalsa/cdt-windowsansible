@@ -75,6 +75,41 @@
       retries: 10
       delay: 30
 
+    # Ensure ADWS is installed and running
+    - name: Install RSAT-AD-PowerShell feature
+      win_feature:
+        name: RSAT-AD-PowerShell
+        state: present
+      register: rsat_install
+
+    - name: Reboot if required after RSAT install
+      win_reboot:
+      when: rsat_install.reboot_required
+
+    - name: Ensure ADWS service is running
+      win_service:
+        name: ADWS
+        state: started
+        start_mode: auto
+
+    - name: Wait for ADWS to be fully operational
+      win_shell: |
+        $attempts = 0
+        while ($attempts -lt 5) {
+          try {
+            Get-ADDomain
+            exit 0
+          } catch {
+            Start-Sleep -Seconds 30
+            $attempts++
+          }
+        }
+        exit 1
+      register: adws_check
+      until: adws_check.rc == 0
+      retries: 5
+      delay: 30
+
     # Step 4: Create and configure domain users
     # This task loops through the users defined in group_vars/all.yml
     # For each user, it:
