@@ -5,34 +5,12 @@ set -euo pipefail
 DEPLOY_NAME="${USER}_deploy"
 # Get current user for prefixing
 USER=${USER:-$(whoami)}
-
-# Set Ansible environment variables for incus connection
-export ANSIBLE_INCUS_REMOTE=gcicompute02
-export ANSIBLE_INCUS_PROJECT="$PROJECT"
-NETWORK_NAME="${USER}_windows_net"
-DC_NAME="${USER}_dc01"
-MEMBER_NAME="${USER}_member01"
-# Cleanup function
-cleanup() {
-    echo "Cleaning up resources..."
-    rm -f inventory.tmp deploy_setup.yml deploy_inventory.ini
-    incus stop --force ${DEPLOY_NAME:-} 2>/dev/null || true
-    incus delete ${DEPLOY_NAME:-} 2>/dev/null || true
-}
-
-# Set cleanup to run on script exit
-trap cleanup EXIT
-
-# Find CDT project directory and set project name
 PROJECTDIR=$(find ~/ -maxdepth 1 | grep cdt | head -n1)
 if [ -z "$PROJECTDIR" ]; then
     echo "Error: No CDT project directory found"
     exit 1
 fi
 PROJECT=$(basename "$PROJECTDIR")
-
-# Get current user for prefixing
-USER=${USER:-$(whoami)}
 
 # Set Ansible environment variables for incus connection
 export ANSIBLE_INCUS_REMOTE=gcicompute02
