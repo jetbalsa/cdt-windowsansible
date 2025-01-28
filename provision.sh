@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -x
 # Exit on error, undefined variables, and pipe failures
 set -euo pipefail
 DEPLOY_NAME="${USER}_deploy"
@@ -32,9 +32,12 @@ incus network delete ${NETWORK_NAME} 2>/dev/null || true
 
 echo "Creating network..."
 incus network create ${NETWORK_NAME} \
-    --type=ovn \
-    --config network.ipv4.address=192.168.56.0/24 \
-    --config network.ipv4.nat=true
+    ipv4.address=192.168.56.1/24 \
+    ipv4.nat=true \
+    ipv6.address=none \
+    ipv6.nat=false \
+    ipv4.firewall=false \
+    dns.mode=none
 
 echo "Creating DC VM..."
 incus init oszoo:winsrv/2019/ansible-cloud \
