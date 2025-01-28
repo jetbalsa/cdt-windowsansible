@@ -81,14 +81,12 @@
     # Step 3: Verify domain controller is operational
     # We ping the DC until it responds, ensuring it's ready for user creation
     # The delay and retries allow sufficient time for AD services to start
-    - name: Wait for Windows hosts to become available
+    - name: Wait for domain controller to become available
       win_ping:
       register: ping_result
-      until: ping_result.changed == true and ping_result.ping == 'pong'
-      retries: 90
-      delay: 20
-      ignore_unreachable: yes
-      ignore_errors: yes
+      until: ping_result is success
+      retries: 10
+      delay: 30
 
     # Ensure ADWS is installed and running
     - name: Install RSAT-AD-PowerShell feature
