@@ -24,12 +24,43 @@
   hosts: domain_members
   gather_facts: true
   tasks:
-    # Configure DNS settings to point to DC
-    - name: Configure DNS settings
+    # Configure DNS settings to point to Domain Controller
+    # This task:
+    # - Gets the DC's IP address from inventory
+    # - Resolves hostname to IP if needed
+    # - Applies it to all network adapters
+    # - Ensures DNS resolution for domain operations
+    - name: Verify DC group exists
+      fail:
+        msg: "No domain controllers found in inventory"
+      when: groups['domain_controllers'] is not defined or groups['domain_controllers'] | length == 0
+
+    - name: Get DC connection info
+      set_fact:
+        dc_addr: "{{ hostvars[groups['domain_controllers'][0]]['ansible_host'] }}"
+
+    # If DC address is a hostname, resolve it to IP
+    - name: Resolve DC hostname to IP if needed
+      set_fact:
+        dc_ip: "{{ lookup('dig', dc_addr) }}"
+      when: not dc_addr | ipv4
+
+    - name: Use DC IP directly if already an IP
+      set_fact:
+        dc_ip: "{{ dc_addr }}"
+      when: dc_addr | ipv4
+
+    - name: Configure DNS settings to point to DC
       win_dns_client:
         adapter_names: '*'
         ipv4_addresses: 
-          - "{{ hostvars[groups['domain_controllers'][0]]['ansible_host'] }}"
+          - "{{ dc_ip }}"
+      register: dns_config
+      
+    - name: Verify DNS configuration
+      fail:
+        msg: "Failed to configure DNS settings. Please check DC availability and network connectivity."
+      when: dns_config is failed
 
     # Step 1: Join the computer to the domain
     # This task:
