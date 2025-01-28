@@ -183,39 +183,32 @@ ansible_winrm_transport=ntlm
 EOF
 "
 
-# Create Ansible playbook for checking Windows availability
-print_message "Creating Windows availability check playbook..."
-cat > windows_check.yml << 'EOF'
----
-- hosts: windows
-  gather_facts: false
-  tasks:
-    - name: Wait for Windows hosts to become available
-      win_ping:
-      register: ping_result
-      until: ping_result is success
-      retries: 90
-      delay: 20
-      failed_when: false
-EOF
-
 # Wait for Windows VMs to become available
 print_message "Waiting for Windows VMs to be ready..."
+max_attempts=90
+attempt=1
 
-# Copy inventory and check playbook to deployment container
-print_command "incus file push inventory.tmp ${DEPLOY_NAME}/root/inventory"
-print_command "incus file push windows_check.yml ${DEPLOY_NAME}/root/windows_check.yml"
+while [ $attempt -le $max_attempts ]; do
+    print_message "Attempt $attempt of $max_attempts..."
+    
+    # Copy inventory to deployment container and run health check
+    print_command "incus file push inventory.tmp ${DEPLOY_NAME}/root/inventory"
+    if print_command "incus exec ${DEPLOY_NAME} -- ansible -v windows -i /root/inventory -m win_ping 2>/dev/null"; then
+        print_message "All Windows VMs are ready!"
+        break
+    fi
+    
+    print_command "sleep 20"
+    attempt=$((attempt + 1))
+done
 
-# Run the availability check
-if print_command "incus exec ${DEPLOY_NAME} -- ansible-playbook -v -i /root/inventory /root/windows_check.yml"; then
-    print_message "All Windows VMs are ready!"
-else
+if [ $attempt -gt $max_attempts ]; then
     print_message "Timeout waiting for Windows VMs to be ready"
     exit 1
 fi
 
 # Clean up temporary files
-print_command "rm -f inventory.tmp deploy_setup.yml deploy_inventory.ini windows_check.yml"
+print_command "rm -f inventory.tmp deploy_setup.yml deploy_inventory.ini"
 
 # Copy CDT Ansible playbook to deployment container
 print_command "incus file push -r ../cdt-windowsansible ${DEPLOY_NAME}/root/"
