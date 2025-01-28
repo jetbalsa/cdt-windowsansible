@@ -35,7 +35,7 @@ incus network create ${NETWORK_NAME} \
     ipv4.address=192.168.56.1/24 \
     ipv4.nat=true \
     ipv6.address=none \
-    ipv6.nat=false
+    ipv6.nat=false 
 
 echo "Creating DC VM..."
 incus init oszoo:winsrv/2019/ansible-cloud \
@@ -43,7 +43,8 @@ incus init oszoo:winsrv/2019/ansible-cloud \
     --vm \
     --config limits.cpu=8 \
     --config limits.memory=16GiB \
-    --network "${NETWORK_NAME},ipv4.address=192.168.56.21" \
+    --network "${NETWORK_NAME}" \
+    --device "eth0,network=${NETWORK_NAME},ipv4.address=192.168.56.21" \
     --device "root,size=320GiB"
 
 echo "Creating Member VM..."
@@ -52,7 +53,8 @@ incus init oszoo:winsrv/2019/ansible-cloud \
     --vm \
     --config limits.cpu=8 \
     --config limits.memory=16GiB \
-    --network "${NETWORK_NAME},ipv4.address=192.168.56.22" \
+    --network "${NETWORK_NAME}" \
+    --device "eth0,network=${NETWORK_NAME},ipv4.address=192.168.56.22" \
     --device "root,size=320GiB"
 
 echo "Creating deployment container..."
@@ -61,7 +63,8 @@ incus stop --force ${DEPLOY_NAME} 2>/dev/null || true
 incus delete ${DEPLOY_NAME} 2>/dev/null || true
 
 incus launch ubuntu:24.04 ${DEPLOY_NAME} \
-    --network "${NETWORK_NAME},ipv4.address=192.168.56.10" -t c4-m8
+    --network "${NETWORK_NAME}" \
+    --device "eth0,network=${NETWORK_NAME},ipv4.address=192.168.56.10" -t c4-m8
 
 echo "Waiting for deployment container to be ready..."
 sleep 10
