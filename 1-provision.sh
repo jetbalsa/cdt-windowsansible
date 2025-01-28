@@ -117,6 +117,15 @@ print_command "cat > deploy_setup.yml << EOF
       wait_for_connection:
         timeout: 30
 
+    - name: Add inventory hostnames to /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        line: "{{ item }}"
+        state: present
+      loop:
+        - "192.168.56.21 dc01.example.local"
+        - "192.168.56.22 client01.example.local"
+
     - name: Add Ansible PPA
       shell: |
         apt-get update
@@ -198,6 +207,9 @@ fi
 # Clean up temporary files
 print_command "rm -f inventory.tmp deploy_setup.yml deploy_inventory.ini"
 
+# Copy CDT Ansible playbook to deployment container
+print_command "incus file push -r ../cdt-ansible ${DEPLOY_NAME}/root/"
+
 # Open VGA consoles for both Windows VMs in background
 print_command "incus console --type=vga ${DC_NAME} &"
 print_command "incus console --type=vga ${MEMBER_NAME} &"
@@ -207,3 +219,6 @@ print_message "Setup complete! Default credentials: ansible/ansible"
 print_message "DC VM: ${DC_NAME} (192.168.56.21)"
 print_message "Member VM: ${MEMBER_NAME} (192.168.56.22)"
 print_message "Deployment container: ${DEPLOY_NAME}"
+print_message "============================================================"
+print_message "To access the deployment container, run: incus shell ${DEPLOY_NAME}"
+print_message "To start deployment of the ansible playboot, run: incus exec ${DEPLOY_NAME} -- ansible-playbook -i /root/cdt-ansible/inventory/hosts /root/cdt-ansible/all.yml"
