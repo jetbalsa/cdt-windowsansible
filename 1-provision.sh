@@ -193,7 +193,7 @@ cat > windows_check.yml << 'EOF'
     - name: Wait for Windows hosts to become available
       win_ping:
       register: ping_result
-      until: ping_result is success
+      until: ping_result.changed == true and ping_result.ping == 'pong'
       retries: 90
       delay: 20
       ignore_unreachable: yes
@@ -202,6 +202,7 @@ cat > windows_check.yml << 'EOF'
     - name: Check final connection status
       win_ping:
       register: final_check
+      failed_when: final_check.ping != 'pong'
 
 EOF
 
