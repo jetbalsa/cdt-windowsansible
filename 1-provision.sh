@@ -23,11 +23,13 @@ print_message() {
 # 3. A Windows Server 2019 Member server
 # 4. An Ubuntu container for Ansible deployment
 
-# Set deployment container name using current username
-DEPLOY_NAME="${USER}-deploy"
+
 
 # Get current username, fallback to whoami if USER env var is not set
 USER=${USER:-$(whoami)}
+# Set deployment container name using current username
+DEPLOY_NAME="${USER}-deploy"
+
 
 # Find the CDT project directory
 # Searches in home directory for a directory containing 'cdt'
