@@ -14,6 +14,15 @@ print_command() {
 print_message() {
     echo "$(tput setaf 2)$1$(tput sgr0)"
 }
+# Find the CDT project directory
+# Searches in home directory for a directory containing 'cdt'
+print_command "PROJECTDIR=\$(find ~/ -maxdepth 1 | grep cdt | head -n1)"
+if [ -z "$PROJECTDIR" ]; then
+    print_message "Error: No CDT project directory found"
+    exit 1
+fi
+# Extract just the project directory name
+print_command "PROJECT=\$(basename \"\$PROJECTDIR\")"
 USER=${USER:-$(whoami)}
 DEPLOY_NAME="${USER}-deploy"
 NETWORK_NAME="${USER}-windows-net"     # Private network for VMs
